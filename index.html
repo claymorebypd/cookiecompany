@@ -1,1 +1,423 @@
-hello world
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Company Stockholm</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React and Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        .animate-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .cookie-card:hover .cookie-image { transform: scale(1.05); }
+        .cookie-image { transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        
+        .social-link:hover { transform: translateY(-4px); }
+        .social-link { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-[#FDFBF7] text-[#4A3728] overflow-x-hidden">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const containerRef = useRef(null);
+            
+            const renderIcon = () => {
+                if (window.lucide && containerRef.current) {
+                    containerRef.current.innerHTML = '';
+                    const iconElement = document.createElement('i');
+                    iconElement.setAttribute('data-lucide', name.toLowerCase());
+                    if (className) iconElement.setAttribute('class', className);
+                    iconElement.style.width = `${size}px`;
+                    iconElement.style.height = `${size}px`;
+                    containerRef.current.appendChild(iconElement);
+                    window.lucide.createIcons({
+                        attrs: { 
+                            width: size, 
+                            height: size, 
+                            'stroke-width': 2,
+                            stroke: 'currentColor'
+                        },
+                        nameAttr: 'data-lucide',
+                        icons: window.lucide.icons,
+                        root: containerRef.current
+                    });
+                }
+            };
+
+            useEffect(() => {
+                renderIcon();
+                const timer = setTimeout(renderIcon, 100);
+                return () => clearTimeout(timer);
+            }, [name, size, className]);
+
+            return <span ref={containerRef} className={`inline-flex items-center justify-center ${className}`} style={{ width: size, height: size }} />;
+        };
+
+        const COOKIES = [
+            { id: 'biscoff', name: 'Biscoff Dream', desc: 'Spiced Belgian cookie butter core with crunchy bits.', price: 35, image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600', tag: 'Best Seller' },
+            { id: 'chocochip', name: 'The Classic', desc: 'Brown butter dough with 70% dark chocolate chunks.', price: 25, image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600', tag: 'Award Winner' },
+            { id: 'pistachio', name: 'Pistachio Cream', desc: 'Rich roasted pistachio filling with white chocolate.', price: 40, image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=600', tag: 'Premium' },
+            { id: 'raspberry', name: 'Raspberry White', desc: 'Tart Swedish raspberries with creamy white chocolate.', price: 38, image: 'https://images.unsplash.com/photo-1603532648955-039310d9ed75?auto=format&fit=crop&w=600' },
+            { id: 'blueberry', name: 'Blueberry Cheese', desc: 'Wild Swedish blueberries with cream cheese center.', price: 38, image: 'https://images.unsplash.com/photo-1583182332473-b31ba08929c8?auto=format&fit=crop&w=600' },
+            { id: 'lemon', name: 'Lemon Curd', desc: 'Zesty lemon core with a sugar-dusted finish.', price: 35, image: 'https://images.unsplash.com/photo-1559622214-f8a9850965bb?auto=format&fit=crop&w=600', tag: 'Seasonal' }
+        ];
+
+        const BOX_OPTIONS = [
+            { size: 5, price: 165, title: 'The Taster Box', label: 'Box of 5', savings: 'Save 10%' },
+            { size: 10, price: 295, title: 'The Fika Set', label: 'Box of 10', savings: 'Save 20%' },
+            { size: 15, price: 395, title: 'The Party Pack', label: 'Box of 15', savings: 'Save 30%' }
+        ];
+
+        const TESTIMONIALS = [
+            { name: "Sofia H.", text: "Best fika in Stockholm, hands down. The Pistachio Cream is literal magic.", handle: "@sofia_fika" },
+            { name: "Erik L.", text: "Finally a cookie that isn't just sweet but has actual depth. Brown butter makes it.", handle: "@erik_bakes" },
+            { name: "Maja W.", text: "Building my own box is so addictive. Perfect for office Friday snacks!", handle: "@maja_sthlm" }
+        ];
+
+        const App = () => {
+            const [view, setView] = useState('home');
+            const [cart, setCart] = useState([]);
+            const [selectedBoxSize, setSelectedBoxSize] = useState(null);
+            const [currentBox, setCurrentBox] = useState([]);
+            const [isCartOpen, setIsCartOpen] = useState(false);
+            const [cartStep, setCartStep] = useState('review');
+
+            const addToCart = (type, price, isBox = false, itemsInBox = []) => {
+                setCart(prevCart => {
+                    const existingItemIndex = prevCart.findIndex(item => item.type === type && !item.isBox && !isBox);
+                    
+                    if (existingItemIndex > -1 && !isBox) {
+                        const newCart = [...prevCart];
+                        newCart[existingItemIndex].quantity += 1;
+                        return newCart;
+                    } else {
+                        return [...prevCart, { 
+                            id: Math.random(), 
+                            type, 
+                            price, 
+                            quantity: 1, 
+                            isBox, 
+                            items: itemsInBox 
+                        }];
+                    }
+                });
+                setIsCartOpen(true);
+            };
+
+            const updateQuantity = (id, delta) => {
+                setCart(prevCart => {
+                    return prevCart.map(item => {
+                        if (item.id === id) {
+                            const newQty = Math.max(0, item.quantity + delta);
+                            return { ...item, quantity: newQty };
+                        }
+                        return item;
+                    }).filter(item => item.quantity > 0);
+                });
+            };
+
+            const addBoxToCart = () => {
+                const opt = BOX_OPTIONS.find(b => b.size === selectedBoxSize);
+                addToCart(opt.title, opt.price, true, [...currentBox]);
+                setCurrentBox([]);
+                setSelectedBoxSize(null);
+                setCartStep('review');
+            };
+
+            const addToBox = (cookie) => {
+                if (currentBox.length < selectedBoxSize) {
+                    setCurrentBox([...currentBox, { ...cookie, boxId: Math.random() }]);
+                }
+            };
+
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const totalItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+            const navigateToSection = (sectionId) => {
+                if (view !== 'home') {
+                    setView('home');
+                    setTimeout(() => {
+                        document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                } else {
+                    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+                }
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col selection:bg-[#D4A373] selection:text-white">
+                    {/* Navbar */}
+                    <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md px-4 md:px-10 py-4 md:py-5 flex justify-between items-center border-b border-[#F2E8DF]">
+                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => {setView('home'); window.scrollTo(0,0)}}>
+                            <div className="bg-[#4A3728] p-1.5 rounded-lg">
+                                <Icon name="Cookie" size={20} className="text-white" />
+                            </div>
+                            <span className="font-extrabold text-xl tracking-tighter uppercase text-[#4A3728]">
+                                cookiecompany<span className="text-[#D4A373]">.se</span>
+                            </span>
+                        </div>
+                        
+                        <div className="flex gap-4 md:gap-8 items-center">
+                            <div className="hidden md:flex gap-8 font-bold text-[11px] uppercase tracking-widest">
+                                <button onClick={() => {setView('home'); window.scrollTo(0,0)}} className={view === 'home' ? 'text-[#D4A373]' : 'text-[#4A3728] hover:text-[#D4A373] transition-colors'}>Home</button>
+                                <button onClick={() => navigateToSection('cookies-section')} className="text-[#4A3728] hover:text-[#D4A373] transition-colors">Our Cookies</button>
+                                <button onClick={() => {setView('shop'); window.scrollTo(0,0)}} className={view === 'shop' ? 'text-[#D4A373]' : 'text-[#4A3728] hover:text-[#D4A373] transition-colors'}>Cookie Boxes</button>
+                                <button onClick={() => {setView('about'); window.scrollTo(0,0)}} className={view === 'about' ? 'text-[#D4A373]' : 'text-[#4A3728] hover:text-[#D4A373] transition-colors'}>About CC</button>
+                            </div>
+                            
+                            <button 
+                                onClick={() => setIsCartOpen(true)} 
+                                className="relative flex items-center justify-center w-12 h-12 bg-[#F5EBE0] hover:bg-[#EDE0D4] active:scale-95 transition-all rounded-2xl shadow-sm border border-[#E8DCCF]"
+                                aria-label="Open Shopping Cart"
+                            >
+                                <Icon name="ShoppingCart" size={22} className="text-[#4A3728]" />
+                                {totalItemsCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-[#D4A373] text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-white animate-in">
+                                        {totalItemsCount}
+                                    </span>
+                                )}
+                            </button>
+                        </div>
+                    </nav>
+
+                    <main className="flex-grow w-full max-w-7xl mx-auto px-4 md:px-6 py-4">
+                        {view === 'home' && (
+                            <div className="animate-in space-y-20 md:space-y-32 mb-20">
+                                {/* Hero */}
+                                <header className="bg-[#4A3728] text-white rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-24 flex flex-col md:flex-row items-center gap-12 overflow-hidden relative">
+                                    <div className="flex-1 space-y-8 z-10 text-center md:text-left">
+                                        <div className="bg-white/10 w-fit px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mx-auto md:mx-0">Stockholm, Sweden</div>
+                                        <h1 className="text-5xl md:text-[90px] font-extrabold leading-[0.95] tracking-tighter">THE <br/><span className="text-[#D4A373]">BIGGEST</span> <br/>CRUNCH.</h1>
+                                        <p className="text-lg opacity-70 max-w-sm mx-auto md:mx-0">Hand-rolled, gooey-centered perfection. Grab a few treats or build a custom box for your next gathering</p>
+                                        <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                                            <button onClick={() => document.getElementById('cookies-section').scrollIntoView({behavior:'smooth'})} className="bg-white text-[#4A3728] px-8 py-5 rounded-2xl font-black text-sm uppercase flex items-center justify-center gap-2 hover:bg-[#D4A373] hover:text-white transition-all">Explore Flavors</button>
+                                            <button onClick={() => setView('shop')} className="bg-[#D4A373] text-white px-8 py-5 rounded-2xl font-black text-sm uppercase flex items-center justify-center gap-2">Curate Your Box</button>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 relative flex items-center justify-center">
+                                        <img src="https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=800" className="w-[85%] rounded-[3rem] shadow-2xl rotate-3" alt="Hero Cookie" />
+                                    </div>
+                                </header>
+
+                                {/* Our Cookies Section */}
+                                <section id="cookies-section" className="space-y-12">
+                                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
+                                        <div className="space-y-2">
+                                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D4A373]">Current Menu</h2>
+                                            <h3 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[#4A3728]">Our Cookies</h3>
+                                        </div>
+                                        <p className="text-[#A09184] max-w-md text-sm md:text-base leading-relaxed">Each cookie is baked using Swedish organic butter and premium chocolate. We rotate flavors monthly to keep your fika exciting.</p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                                        {COOKIES.map(cookie => (
+                                            <div key={cookie.id} className="cookie-card group bg-white rounded-[2.5rem] border border-[#F2E8DF] p-5 shadow-sm hover:shadow-xl transition-all">
+                                                <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] mb-6">
+                                                    <img src={cookie.image} className="cookie-image w-full h-full object-cover" alt={cookie.name} />
+                                                    {cookie.tag && (
+                                                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full font-black text-[9px] uppercase tracking-widest text-[#4A3728] shadow-sm">{cookie.tag}</div>
+                                                    )}
+                                                </div>
+                                                <div className="space-y-2 px-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <h4 className="text-2xl font-extrabold text-[#4A3728]">{cookie.name}</h4>
+                                                        <span className="font-black text-[#D4A373]">{cookie.price} SEK</span>
+                                                    </div>
+                                                    <p className="text-sm text-[#A09184] leading-relaxed pb-4">{cookie.desc}</p>
+                                                    <button onClick={() => addToCart(cookie.name, cookie.price)} className="w-full py-4 bg-[#F5EBE0]/60 rounded-xl font-black text-[11px] uppercase tracking-widest text-[#4A3728] group-hover:bg-[#4A3728] group-hover:text-white transition-all">Quick Add</button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            </div>
+                        )}
+
+                        {view === 'about' && (
+                            <div className="animate-in space-y-20 mb-20">
+                                <div className="text-center space-y-6 pt-12">
+                                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D4A373]">Our Story</h2>
+                                    <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-[#4A3728]">Baked in <br/><span className="italic text-[#D4A373]">Stockholm</span></h1>
+                                </div>
+                                <section className="grid md:grid-cols-2 gap-16 items-center bg-white rounded-[3rem] p-8 md:p-16 border border-[#F2E8DF]">
+                                    <div className="relative">
+                                        <div className="absolute -top-6 -left-6 w-24 h-24 bg-[#D4A373] rounded-full flex items-center justify-center text-white z-10 -rotate-12 shadow-xl">
+                                            <span className="font-black text-xl tracking-tighter">PD</span>
+                                        </div>
+                                        <div className="aspect-[4/5] rounded-[2rem] overflow-hidden">
+                                            <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800" className="w-full h-full object-cover" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-8">
+                                        <h3 className="text-3xl font-extrabold text-[#4A3728]">Meet the Founder: PD</h3>
+                                        <p className="text-[#A09184] leading-relaxed text-lg">Our journey began in a tiny apartment kitchen in Stockholm, where our founder, PD, spent countless nights perfecting the ratio of brown butter to dark chocolate.</p>
+                                        <p className="text-[#A09184] leading-relaxed text-lg">"I wanted to create a cookie that felt like a hug—crispy on the outside, but with a molten, gooey heart."</p>
+                                    </div>
+                                </section>
+                            </div>
+                        )}
+
+                        {view === 'shop' && (
+                            <div className="animate-in pt-6 pb-20">
+                                <button onClick={() => setView('home')} className="flex items-center gap-2 font-bold text-xs uppercase tracking-widest text-[#A09184] mb-10 hover:text-[#4A3728] transition-colors">
+                                    <Icon name="ArrowLeft" size={14} /> Back to Home
+                                </button>
+                                
+                                {!selectedBoxSize ? (
+                                    <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto py-10">
+                                        {BOX_OPTIONS.map(box => (
+                                            <button 
+                                                key={box.size}
+                                                onClick={() => {setSelectedBoxSize(box.size); setCurrentBox([]);}}
+                                                className="bg-white p-10 rounded-[2.5rem] border border-[#F2E8DF] hover:border-[#D4A373] hover:shadow-2xl transition-all group text-left space-y-6 relative overflow-hidden"
+                                            >
+                                                {box.savings && <div className="absolute top-6 right-6 bg-[#D4A373] text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">{box.savings}</div>}
+                                                <div className="w-16 h-16 bg-[#F5EBE0] rounded-2xl flex items-center justify-center text-[#4A3728] group-hover:bg-[#4A3728] group-hover:text-white transition-all"><Icon name="Package" size={32} /></div>
+                                                <div>
+                                                    <h4 className="text-2xl font-black text-[#4A3728]">{box.title}</h4>
+                                                    <p className="text-[#A09184] font-bold">Contains {box.size} cookies</p>
+                                                </div>
+                                                <div className="flex justify-between items-end pt-4">
+                                                    <span className="text-3xl font-black text-[#4A3728]">{box.price} SEK</span>
+                                                    <span className="bg-[#4A3728] text-white p-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all"><Icon name="ArrowRight" size={20} /></span>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="grid lg:grid-cols-3 gap-12">
+                                        <div className="lg:col-span-2 space-y-10">
+                                            <div className="flex justify-between items-center">
+                                                <h2 className="text-4xl font-extrabold text-[#4A3728]">Building {BOX_OPTIONS.find(b => b.size === selectedBoxSize).title}</h2>
+                                                <button onClick={() => setSelectedBoxSize(null)} className="text-[10px] font-black uppercase tracking-widest text-[#D4A373]">Change Size</button>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {COOKIES.map(cookie => (
+                                                    <div key={cookie.id} className="bg-white p-4 rounded-3xl border border-[#F2E8DF] flex gap-4 items-center group transition-all hover:shadow-md">
+                                                        <div className="w-24 h-24 rounded-2xl overflow-hidden"><img src={cookie.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform" /></div>
+                                                        <div className="flex-1">
+                                                            <h4 className="font-bold text-lg text-[#4A3728]">{cookie.name}</h4>
+                                                            <button onClick={() => addToBox(cookie)} disabled={currentBox.length >= selectedBoxSize} className="mt-2 px-4 py-2 bg-[#F5EBE0] rounded-lg text-[10px] font-black uppercase tracking-widest disabled:opacity-20">Add to Box</button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="lg:sticky lg:top-32 h-fit bg-white p-8 rounded-[2.5rem] border-2 border-[#D4A373] shadow-2xl">
+                                            <h3 className="text-xl font-black mb-8 flex justify-between text-[#4A3728]">Box Progress <span>{currentBox.length}/{selectedBoxSize}</span></h3>
+                                            <div className="grid grid-cols-5 gap-3 mb-10">
+                                                {[...Array(selectedBoxSize)].map((_, i) => (
+                                                    <div key={i} className="aspect-square bg-[#FDFBF7] border-2 border-dashed border-[#EDE0D4] rounded-xl flex items-center justify-center overflow-hidden relative group">
+                                                        {currentBox[i] ? <img src={currentBox[i].image} className="w-full h-full object-cover" /> : <Icon name="Cookie" size={14} className="opacity-10" />}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <button onClick={addBoxToCart} disabled={currentBox.length < selectedBoxSize} className="w-full bg-[#4A3728] text-white py-5 rounded-2xl font-black text-sm uppercase tracking-widest disabled:opacity-30">Complete Box</button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </main>
+
+                    {/* Cart Modal */}
+                    {isCartOpen && (
+                        <div className="fixed inset-0 z-50 flex justify-end">
+                            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsCartOpen(false)} />
+                            <div className="relative w-full md:max-w-md bg-white h-full p-8 md:p-12 flex flex-col shadow-2xl animate-in">
+                                <div className="flex justify-between items-center mb-10">
+                                    <h2 className="text-3xl font-extrabold text-[#4A3728]">{cartStep === 'success' ? 'Ordered!' : 'Basket'}</h2>
+                                    <button onClick={() => setIsCartOpen(false)} className="p-3 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors">
+                                        <Icon name="X" size={20} className="text-[#4A3728]" />
+                                    </button>
+                                </div>
+                                
+                                <div className="flex-1 overflow-y-auto no-scrollbar space-y-4">
+                                    {cartStep === 'review' ? (
+                                        cart.length === 0 ? (
+                                            <div className="text-center py-20 opacity-20">
+                                                <Icon name="ShoppingCart" size={48} className="mx-auto mb-4 text-[#4A3728]"/>
+                                                <p className="font-bold text-[#4A3728]">Empty basket</p>
+                                            </div>
+                                        ) : (
+                                            cart.map(item => (
+                                                <div key={item.id} className="bg-[#FDFBF7] p-6 rounded-[1.5rem] border border-[#F2E8DF] space-y-4">
+                                                    <div className="flex justify-between items-start">
+                                                        <div>
+                                                            <h4 className="font-bold text-lg text-[#4A3728]">{item.type}</h4>
+                                                            <p className="text-[10px] font-black uppercase text-[#D4A373]">{item.isBox ? 'Custom Assortment' : 'Signature Cookie'}</p>
+                                                        </div>
+                                                        <p className="font-black text-[#4A3728]">{item.price * item.quantity} SEK</p>
+                                                    </div>
+                                                    
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="flex items-center bg-white border border-[#F2E8DF] rounded-xl p-1">
+                                                            <button onClick={() => updateQuantity(item.id, -1)} className="w-8 h-8 flex items-center justify-center hover:bg-[#F5EBE0] rounded-lg transition-colors"><Icon name="Minus" size={14}/></button>
+                                                            <span className="w-8 text-center font-bold text-sm">{item.quantity}</span>
+                                                            <button onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 flex items-center justify-center hover:bg-[#F5EBE0] rounded-lg transition-colors"><Icon name="Plus" size={14}/></button>
+                                                        </div>
+                                                        {item.quantity > 1 && <span className="text-[10px] text-[#A09184] font-bold">{item.price} SEK each</span>}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )
+                                    ) : cartStep === 'shipping' ? (
+                                        <div className="space-y-4 pt-4">
+                                            <input className="w-full p-5 bg-[#FDFBF7] border border-[#F2E8DF] rounded-2xl outline-none focus:border-[#D4A373]" placeholder="Contact Name" />
+                                            <input className="w-full p-5 bg-[#FDFBF7] border border-[#F2E8DF] rounded-2xl outline-none focus:border-[#D4A373]" placeholder="Phone Number" />
+                                            <div className="bg-[#F5EBE0] p-5 rounded-2xl flex items-center gap-4">
+                                                <Icon name="Store" size={20} className="text-[#D4A373]" />
+                                                <p className="text-xs font-bold leading-tight uppercase tracking-widest">In-Store Pickup Only <br/><span className="text-[10px] opacity-60">Flagship Shop, Stockholm</span></p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-10 space-y-6">
+                                            <div className="w-24 h-24 bg-[#D4A373]/10 text-[#D4A373] rounded-full flex items-center justify-center mx-auto"><Icon name="Check" size={48} /></div>
+                                            <h3 className="text-3xl font-extrabold text-[#4A3728]">Vi ses snart!</h3>
+                                            <p className="text-sm opacity-60">Order received.</p>
+                                            <button onClick={() => {setIsCartOpen(false); setView('home'); setCart([]); setCartStep('review');}} className="w-full py-5 bg-[#4A3728] text-white rounded-2xl font-black text-xs uppercase tracking-widest">Great</button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {cart.length > 0 && cartStep !== 'success' && (
+                                    <div className="pt-8 mt-4 border-t border-[#F2E8DF]">
+                                        <div className="flex justify-between items-end mb-8">
+                                            <span className="text-[10px] font-black uppercase text-[#A09184] tracking-widest">Subtotal</span>
+                                            <span className="text-4xl font-black text-[#4A3728]">{totalPrice} SEK</span>
+                                        </div>
+                                        <button onClick={() => cartStep === 'review' ? setCartStep('shipping') : setCartStep('success')} className="w-full bg-[#D4A373] text-white py-6 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg">
+                                            {cartStep === 'review' ? 'Continue to Pickup' : 'Place Order'}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

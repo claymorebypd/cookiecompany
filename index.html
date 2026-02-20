@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Company Stockholm</title>
+    <title>O My Cookie! | Handcrafted Cookies Stockholm</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React and Babel -->
@@ -71,16 +71,34 @@
             return <span ref={containerRef} className={`inline-flex items-center justify-center ${className}`} style={{ width: size, height: size }} />;
         };
 
+        // Robust Inline SVG Cart Icon
+        const CartIcon = ({ size = 22, className = "" }) => (
+            <svg 
+                width={size} 
+                height={size} 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className={className}
+            >
+                <circle cx="8" cy="21" r="1" />
+                <circle cx="19" cy="21" r="1" />
+                <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+            </svg>
+        );
+
         const COOKIES = [
             { id: 'biscoff', name: 'Biscoff Dream', desc: 'Spiced Belgian cookie butter core with crunchy bits.', price: 35, image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600', tag: 'Best Seller' },
-            { id: 'chocochip', name: 'The Classic', desc: 'Brown butter dough with 70% dark chocolate chunks.', price: 25, image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600', tag: 'Award Winner' },
-            { id: 'pistachio', name: 'Pistachio Cream', desc: 'Rich roasted pistachio filling with white chocolate.', price: 40, image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=600', tag: 'Premium' },
+            { id: 'chocochip', name: 'The Classic', desc: 'Brown butter dough with 70% dark chocolate chunks.', price: 25, image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600', tag: null },
+            { id: 'pistachio', name: 'Pistachio Cream', desc: 'Rich roasted pistachio filling with white chocolate.', price: 40, image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=600', tag: 'Best Seller' },
             { id: 'raspberry', name: 'Raspberry White', desc: 'Tart Swedish raspberries with creamy white chocolate.', price: 38, image: 'https://images.unsplash.com/photo-1603532648955-039310d9ed75?auto=format&fit=crop&w=600' },
             { id: 'blueberry', name: 'Blueberry Cheese', desc: 'Wild Swedish blueberries with cream cheese center.', price: 38, image: 'https://images.unsplash.com/photo-1583182332473-b31ba08929c8?auto=format&fit=crop&w=600' },
             { id: 'lemon', name: 'Lemon Curd', desc: 'Zesty lemon core with a sugar-dusted finish.', price: 35, image: 'https://images.unsplash.com/photo-1559622214-f8a9850965bb?auto=format&fit=crop&w=600', tag: 'Seasonal' }
         ];
 
-        // Updated prices with bulk savings logic
         const BOX_OPTIONS = [
             { size: 5, price: 165, title: 'The Taster Box', label: 'Box of 5', savings: 'Save 10%' },
             { size: 10, price: 295, title: 'The Fika Set', label: 'Box of 10', savings: 'Save 20%' },
@@ -100,6 +118,50 @@
             const [currentBox, setCurrentBox] = useState([]);
             const [isCartOpen, setIsCartOpen] = useState(false);
             const [cartStep, setCartStep] = useState('review');
+            const [showCookieBanner, setShowCookieBanner] = useState(false);
+
+            useEffect(() => {
+                const consent = localStorage.getItem('cookie-consent');
+                if (!consent) {
+                    const timer = setTimeout(() => setShowCookieBanner(true), 2000);
+                    return () => clearTimeout(timer);
+                }
+            }, []);
+
+            const acceptCookies = () => {
+                localStorage.setItem('cookie-consent', 'true');
+                setShowCookieBanner(false);
+            };
+
+            // Consolidated Add Function
+            const addToCart = (type, price) => {
+                setCart(prevCart => {
+                    const existingIndex = prevCart.findIndex(item => item.type === type);
+                    if (existingIndex > -1) {
+                        const newCart = [...prevCart];
+                        newCart[existingIndex] = { 
+                            ...newCart[existingIndex], 
+                            quantity: newCart[existingIndex].quantity + 1 
+                        };
+                        return newCart;
+                    } else {
+                        return [...prevCart, { id: Math.random(), type, price, quantity: 1 }];
+                    }
+                });
+                setIsCartOpen(true);
+            };
+
+            const updateQuantity = (id, delta) => {
+                setCart(prevCart => {
+                    return prevCart.map(item => {
+                        if (item.id === id) {
+                            const newQty = Math.max(0, item.quantity + delta);
+                            return { ...item, quantity: newQty };
+                        }
+                        return item;
+                    }).filter(item => item.quantity > 0);
+                });
+            };
 
             const handleStartBox = (size) => {
                 setSelectedBoxSize(size);
@@ -116,14 +178,15 @@
 
             const addBoxToCart = () => {
                 const opt = BOX_OPTIONS.find(b => b.size === selectedBoxSize);
-                setCart([...cart, { id: Math.random(), type: opt.title, items: [...currentBox], price: opt.price }]);
+                setCart([...cart, { id: Math.random(), type: opt.title, items: [...currentBox], price: opt.price, quantity: 1 }]);
                 setCurrentBox([]);
                 setSelectedBoxSize(null);
                 setCartStep('review');
                 setIsCartOpen(true);
             };
 
-            const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const totalItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
             const navigateToSection = (sectionId) => {
                 if (view !== 'home') {
@@ -145,7 +208,7 @@
                                 <Icon name="Cookie" size={20} className="text-white" />
                             </div>
                             <span className="font-extrabold text-xl tracking-tighter uppercase text-[#4A3728]">
-                                cookiecompany<span className="text-[#D4A373]">.se</span>
+                                omycookie<span className="text-[#D4A373]">.se</span>
                             </span>
                         </div>
                         
@@ -162,10 +225,10 @@
                                 className="relative flex items-center justify-center w-12 h-12 bg-[#F5EBE0] hover:bg-[#EDE0D4] active:scale-95 transition-all rounded-2xl shadow-sm border border-[#E8DCCF]"
                                 aria-label="Open Shopping Cart"
                             >
-                                <Icon name="ShoppingCart" size={22} className="text-[#4A3728]" />
-                                {cart.length > 0 && (
+                                <CartIcon size={22} className="text-[#4A3728]" />
+                                {totalItemsCount > 0 && (
                                     <span className="absolute -top-1 -right-1 bg-[#D4A373] text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-white animate-in">
-                                        {cart.length}
+                                        {totalItemsCount}
                                     </span>
                                 )}
                             </button>
@@ -216,7 +279,7 @@
                                                         <span className="font-black text-[#D4A373]">{cookie.price} SEK</span>
                                                     </div>
                                                     <p className="text-sm text-[#A09184] leading-relaxed pb-4">{cookie.desc}</p>
-                                                    <button onClick={() => {setCart([...cart, { id: Math.random(), type: cookie.name, price: cookie.price }]); setIsCartOpen(true)}} className="w-full py-4 bg-[#F5EBE0]/60 rounded-xl font-black text-[11px] uppercase tracking-widest text-[#4A3728] group-hover:bg-[#4A3728] group-hover:text-white transition-all">Quick Add</button>
+                                                    <button onClick={() => addToCart(cookie.name, cookie.price)} className="w-full py-4 bg-[#F5EBE0]/60 rounded-xl font-black text-[11px] uppercase tracking-widest text-[#4A3728] group-hover:bg-[#4A3728] group-hover:text-white transition-all">Quick Add</button>
                                                 </div>
                                             </div>
                                         ))}
@@ -251,10 +314,11 @@
                                         <div className="space-y-4">
                                             <h3 className="text-3xl font-extrabold text-[#4A3728]">Meet the Founder: PD</h3>
                                             <p className="text-[#A09184] leading-relaxed text-lg">
-                                                Our journey began in a tiny apartment kitchen in Stockholm, where our founder, PD, spent countless nights perfecting the ratio of brown butter to dark chocolate.
+                                                OMYCOOKIE.SE was created with one intention: to give people a moment they would remember.
+                                                From the very beginning, the focus wasn’t on where we started—but on what we wanted others to feel. A cookie that surprises. Comfort that lingers. A pause in the day that feels genuinely special.
                                             </p>
                                             <p className="text-[#A09184] leading-relaxed text-lg">
-                                                "I wanted to create a cookie that felt like a hug—crispy on the outside, but with a molten, gooey heart that surprises you with every bite. To me, fika isn't just a coffee break; it's the highlight of the day."
+                                                “To me, fika is about presence,” says founder PD. “It’s about slowing down and enjoying something made with thought. That’s the experience we wanted to share.”
                                             </p>
                                         </div>
                                         <div className="pt-6 border-t border-[#F2E8DF]">
@@ -445,19 +509,97 @@
                                 )}
                             </div>
                         )}
+
+                        {view === 'privacy' && (
+                            <div className="animate-in max-w-4xl mx-auto py-12 px-4 space-y-12">
+                                <button onClick={() => setView('home')} className="flex items-center gap-2 font-bold text-xs uppercase tracking-widest text-[#A09184] hover:text-[#4A3728] transition-colors mb-10">
+                                    <Icon name="ArrowLeft" size={14} /> Back to Home
+                                </button>
+                                
+                                <div className="space-y-4">
+                                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D4A373]">Legal Information</h2>
+                                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[#4A3728]">Privacy Policy</h1>
+                                    <p className="text-sm text-[#A09184]">Effective Date: February 20, 2026</p>
+                                </div>
+
+                                <div className="prose prose-stone text-[#4A3728] space-y-10">
+                                    <section className="space-y-4">
+                                        <h3 className="text-xl font-bold">1. Introduction</h3>
+                                        <p className="leading-relaxed opacity-80">
+                                            Welcome to O My Cookie! (referred to as "we", "us", or "our"). We are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This policy outlines how we collect, use, and protect your data when you visit omycookie.se.
+                                        </p>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h3 className="text-xl font-bold">2. Information We Collect</h3>
+                                        <p className="leading-relaxed opacity-80">
+                                            When you place a pickup order or use our "Build a Box" feature, we may collect:
+                                        </p>
+                                        <ul className="list-disc pl-5 space-y-2 opacity-80">
+                                            <li><strong>Contact Details:</strong> Your name and phone number to verify your order during in-store pickup.</li>
+                                            <li><strong>Order History:</strong> Details of the cookie selections and boxes you have curated.</li>
+                                            <li><strong>Usage Data:</strong> Information on how you interact with our website to improve your user experience.</li>
+                                        </ul>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h3 className="text-xl font-bold">3. How We Use Your Information</h3>
+                                        <p className="leading-relaxed opacity-80">
+                                            Your data is used strictly for operational purposes:
+                                        </p>
+                                        <ul className="list-disc pl-5 space-y-2 opacity-80">
+                                            <li>To process and fulfill your cookie orders for pickup in Stockholm.</li>
+                                            <li>To provide customer support regarding your order.</li>
+                                            <li>To improve our website functionality and cookie menu based on popular selections.</li>
+                                        </ul>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h3 className="text-xl font-bold">4. Data Storage & GDPR</h3>
+                                        <p className="leading-relaxed opacity-80">
+                                            As a Swedish company (Bluden AB), we comply with the General Data Protection Regulation (GDPR). Your data is stored securely and is only accessible to authorized staff members necessary for order fulfillment. We do not sell your personal data to third parties.
+                                        </p>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h3 className="text-xl font-bold">5. Cookies</h3>
+                                        <p className="leading-relaxed opacity-80">
+                                            Our website uses "cookies" to enhance your experience. These are small files stored on your device that help us remember your shopping basket and preferences. You can choose to disable cookies in your browser settings, though this may limit your ability to use the "Build a Box" feature.
+                                        </p>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h3 className="text-xl font-bold">6. Company Information</h3>
+                                        <p className="leading-relaxed opacity-80">
+                                            O My Cookie! is operated by:<br/>
+                                            <strong>Bluden AB</strong><br/>
+                                            Stockholm, Sweden<br/>
+                                            Contact: info@omycookie.se
+                                        </p>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h3 className="text-xl font-bold">7. Your Rights</h3>
+                                        <p className="leading-relaxed opacity-80">
+                                            You have the right to request access to the personal data we hold about you, to request corrections, or to ask for your data to be deleted from our pickup logs. Please contact us via email for any such requests.
+                                        </p>
+                                    </section>
+                                </div>
+                            </div>
+                        )}
                     </main>
 
                     {/* Footer */}
                     <footer className="pt-20 pb-16 text-center space-y-10 border-t border-[#F2E8DF]">
                         <div className="flex justify-center gap-2 items-center grayscale opacity-40">
                             <div className="bg-[#4A3728] p-1.5 rounded-lg"><Icon name="Cookie" size={14} className="text-white" /></div>
-                            <span className="font-extrabold text-lg tracking-tighter uppercase text-[#4A3728]">cookiecompany.se</span>
+                            <span className="font-extrabold text-lg tracking-tighter uppercase text-[#4A3728]">omycookie.se</span>
                         </div>
 
                         <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 px-6">
                             <button onClick={() => {setView('about'); window.scrollTo(0,0)}} className="text-[10px] font-black text-[#A09184] uppercase tracking-[0.2em] hover:text-[#D4A373] transition-colors">About CC</button>
                             <a href="#" className="text-[10px] font-black text-[#A09184] uppercase tracking-[0.2em] hover:text-[#D4A373] transition-colors">Terms of Service</a>
-                            <a href="#" className="text-[10px] font-black text-[#A09184] uppercase tracking-[0.2em] hover:text-[#D4A373] transition-colors">Privacy Policy</a>
+                            <button onClick={() => {setView('privacy'); window.scrollTo(0,0)}} className="text-[10px] font-black text-[#A09184] uppercase tracking-[0.2em] hover:text-[#D4A373] transition-colors">Privacy Policy</button>
                         </div>
 
                         <div className="text-[10px] font-bold text-[#A09184] uppercase tracking-[0.3em] opacity-60">
@@ -480,17 +622,38 @@
                                     {cartStep === 'review' ? (
                                         cart.length === 0 ? (
                                             <div className="text-center py-20 opacity-20">
-                                                <Icon name="ShoppingCart" size={48} className="mx-auto mb-4 text-[#4A3728]"/>
+                                                <CartIcon size={48} className="mx-auto mb-4 text-[#4A3728]"/>
                                                 <p className="font-bold text-[#4A3728]">Empty basket</p>
                                             </div>
                                         ) : (
                                             cart.map(item => (
-                                                <div key={item.id} className="bg-[#FDFBF7] p-6 rounded-[1.5rem] border border-[#F2E8DF] flex justify-between items-center">
-                                                    <div>
-                                                        <h4 className="font-bold text-lg text-[#4A3728]">{item.type}</h4>
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-[#D4A373]">Freshly Baked</p>
+                                                <div key={item.id} className="bg-[#FDFBF7] p-6 rounded-[1.5rem] border border-[#F2E8DF] flex justify-between items-center group animate-in">
+                                                    <div className="flex-1">
+                                                        <h4 className="font-bold text-lg text-[#4A3728] leading-tight">{item.type}</h4>
+                                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#D4A373] mt-1">
+                                                            {item.price} SEK / ea
+                                                        </p>
                                                     </div>
-                                                    <p className="font-black text-[#4A3728]">{item.price} SEK</p>
+                                                    
+                                                    <div className="flex items-center bg-white border border-[#F2E8DF] rounded-xl p-1 shadow-sm">
+                                                        <button 
+                                                            onClick={() => updateQuantity(item.id, -1)}
+                                                            className="w-8 h-8 flex items-center justify-center text-[#4A3728] hover:bg-gray-50 rounded-lg transition-colors"
+                                                        >
+                                                            <Icon name="Minus" size={14} />
+                                                        </button>
+                                                        <span className="w-8 text-center font-black text-sm text-[#4A3728]">{item.quantity}</span>
+                                                        <button 
+                                                            onClick={() => updateQuantity(item.id, 1)}
+                                                            className="w-8 h-8 flex items-center justify-center text-[#4A3728] hover:bg-gray-50 rounded-lg transition-colors"
+                                                        >
+                                                            <Icon name="Plus" size={14} />
+                                                        </button>
+                                                    </div>
+
+                                                    <div className="pl-6 text-right min-w-[80px]">
+                                                        <p className="font-black text-[#4A3728] whitespace-nowrap">{item.price * item.quantity} SEK</p>
+                                                    </div>
                                                 </div>
                                             ))
                                         )
@@ -507,7 +670,7 @@
                                         <div className="text-center py-10 space-y-6">
                                             <div className="w-24 h-24 bg-[#D4A373]/10 text-[#D4A373] rounded-full flex items-center justify-center mx-auto"><Icon name="Check" size={48} /></div>
                                             <h3 className="text-3xl font-extrabold text-[#4A3728]">Vi ses snart!</h3>
-                                            <p className="text-sm opacity-60 text-[#4A3728]">We've received your order. It'll be ready for pick-up in 20 minutes.</p>
+                                            <p className="text-sm opacity-60 text-[#4A3728]">We've received your order. It'll be ready for pick-up soon.</p>
                                             <button onClick={() => {setIsCartOpen(false); setView('home'); setCart([]); setCartStep('review');}} className="w-full py-5 bg-[#4A3728] text-white rounded-2xl font-black text-xs uppercase tracking-widest">Great</button>
                                         </div>
                                     )}
@@ -523,6 +686,40 @@
                                         </button>
                                     </div>
                                 )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Cookie Consent Banner */}
+                    {showCookieBanner && (
+                        <div className="fixed bottom-6 left-6 right-6 z-[60] md:left-auto md:right-10 md:w-96 animate-in">
+                            <div className="bg-white/95 backdrop-blur-xl border border-[#F2E8DF] shadow-2xl rounded-[2rem] p-6 flex flex-col gap-6">
+                                <div className="flex gap-4 items-start">
+                                    <div className="bg-[#F5EBE0] p-3 rounded-2xl">
+                                        <Icon name="Cookie" size={24} className="text-[#D4A373]" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <h3 className="font-extrabold text-[#4A3728]">Cookie Notice</h3>
+                                        <p className="text-xs text-[#A09184] line-height-relaxed">
+                                            We use cookies to remember your fika box selections and improve your experience. 
+                                            Check our <button onClick={() => {setView('privacy'); setShowCookieBanner(false); window.scrollTo(0,0)}} className="text-[#D4A373] underline font-bold">Privacy Policy</button> for more details.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-3">
+                                    <button 
+                                        onClick={acceptCookies}
+                                        className="flex-1 py-4 bg-[#4A3728] text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#2d2118] transition-colors"
+                                    >
+                                        Accept All
+                                    </button>
+                                    <button 
+                                        onClick={() => setShowCookieBanner(false)}
+                                        className="px-6 py-4 bg-[#F5EBE0] text-[#4A3728] rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#EDE0D4] transition-colors"
+                                    >
+                                        Dismiss
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}

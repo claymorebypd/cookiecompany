@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O My Cookie! | Handcrafted Cookies Stockholm</title>
+    <title>Oh My Cookie | Handcrafted Cookies Stockholm</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React and Babel -->
@@ -71,7 +71,6 @@
             return <span ref={containerRef} className={`inline-flex items-center justify-center ${className}`} style={{ width: size, height: size }} />;
         };
 
-        // Robust Inline SVG Cart Icon
         const CartIcon = ({ size = 22, className = "" }) => (
             <svg 
                 width={size} 
@@ -91,18 +90,52 @@
         );
 
         const COOKIES = [
-            { id: 'biscoff', name: 'Biscoff Dream', desc: 'Spiced Belgian cookie butter core with crunchy bits.', price: 35, image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600', tag: 'Best Seller' },
-            { id: 'chocochip', name: 'The Classic', desc: 'Brown butter dough with 70% dark chocolate chunks.', price: 25, image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600', tag: null },
-            { id: 'pistachio', name: 'Pistachio Cream', desc: 'Rich roasted pistachio filling with white chocolate.', price: 40, image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=600', tag: 'Best Seller' },
-            { id: 'raspberry', name: 'Raspberry White', desc: 'Tart Swedish raspberries with creamy white chocolate.', price: 38, image: 'https://images.unsplash.com/photo-1603532648955-039310d9ed75?auto=format&fit=crop&w=600' },
-            { id: 'blueberry', name: 'Blueberry Cheese', desc: 'Wild Swedish blueberries with cream cheese center.', price: 38, image: 'https://images.unsplash.com/photo-1583182332473-b31ba08929c8?auto=format&fit=crop&w=600' },
-            { id: 'lemon', name: 'Lemon Curd', desc: 'Zesty lemon core with a sugar-dusted finish.', price: 35, image: 'https://images.unsplash.com/photo-1559622214-f8a9850965bb?auto=format&fit=crop&w=600', tag: 'Seasonal' }
+            { 
+                id: 'raspberry-white', 
+                name: 'Raspberry White Choco', 
+                desc: 'Tangy Swedish raspberries paired with premium creamy white chocolate chunks.', 
+                price: 38, 
+                image: 'https://images.unsplash.com/photo-1603532648955-039310d9ed75?auto=format&fit=crop&w=600', 
+                tag: 'New' 
+            },
+            { 
+                id: 'pistachio', 
+                name: 'Pistachio Dream', 
+                desc: 'Rich roasted pistachio dough with a silky pistachio cream center.', 
+                price: 42, 
+                image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=600', 
+                tag: 'Best Seller' 
+            },
+            { 
+                id: 'biscoff-white', 
+                name: 'Biscoff White Choco', 
+                desc: 'Caramelized Biscoff spread core topped with white chocolate drizzles.', 
+                price: 38, 
+                image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600', 
+                tag: 'Best Seller' 
+            },
+            { 
+                id: 'brown-butter', 
+                name: 'Brown Butter Choco', 
+                desc: 'Nutty brown butter dough loaded with 70% dark chocolate chunks and sea salt.', 
+                price: 35, 
+                image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600', 
+                tag: 'The Classic' 
+            },
+            { 
+                id: 'red-velvet', 
+                name: 'Red Velvet Cheesecake', 
+                desc: 'Vibrant cocoa dough with a thick, tangy cream cheese frosting filling.', 
+                price: 40, 
+                image: 'https://images.unsplash.com/photo-1618923850107-d1a234d7a73a?auto=format&fit=crop&w=600', 
+                tag: 'Must Try' 
+            }
         ];
 
         const BOX_OPTIONS = [
             { size: 5, price: 165, title: 'The Taster Box', label: 'Box of 5', savings: 'Save 10%' },
-            { size: 10, price: 295, title: 'The Fika Set', label: 'Box of 10', savings: 'Save 20%' },
-            { size: 15, price: 395, title: 'The Party Pack', label: 'Box of 15', savings: 'Save 30%' }
+            { size: 7, price: 225, title: 'The Weekender', label: 'Box of 7', savings: 'Save 15%' },
+            { size: 10, price: 295, title: 'The Fika Set', label: 'Box of 10', savings: 'Save 20%' }
         ];
 
         const TESTIMONIALS = [
@@ -133,7 +166,6 @@
                 setShowCookieBanner(false);
             };
 
-            // Consolidated Add Function
             const addToCart = (type, price) => {
                 setCart(prevCart => {
                     const existingIndex = prevCart.findIndex(item => item.type === type);
@@ -208,7 +240,7 @@
                                 <Icon name="Cookie" size={20} className="text-white" />
                             </div>
                             <span className="font-extrabold text-xl tracking-tighter uppercase text-[#4A3728]">
-                                omycookie<span className="text-[#D4A373]">.se</span>
+                                ohmycookie<span className="text-[#D4A373]">.se</span>
                             </span>
                         </div>
                         
@@ -217,7 +249,7 @@
                                 <button onClick={() => {setView('home'); window.scrollTo(0,0)}} className={view === 'home' ? 'text-[#D4A373]' : 'text-[#4A3728] hover:text-[#D4A373] transition-colors'}>Home</button>
                                 <button onClick={() => navigateToSection('cookies-section')} className="text-[#4A3728] hover:text-[#D4A373] transition-colors">Our Cookies</button>
                                 <button onClick={() => {setView('shop'); window.scrollTo(0,0)}} className={view === 'shop' ? 'text-[#D4A373]' : 'text-[#4A3728] hover:text-[#D4A373] transition-colors'}>Cookie Boxes</button>
-                                <button onClick={() => {setView('about'); window.scrollTo(0,0)}} className={view === 'about' ? 'text-[#D4A373]' : 'text-[#4A3728] hover:text-[#D4A373] transition-colors'}>About CC</button>
+                                <button onClick={() => {setView('about'); window.scrollTo(0,0)}} className={view === 'about' ? 'text-[#D4A373]' : 'text-[#4A3728] hover:text-[#D4A373] transition-colors'}>About OMC</button>
                             </div>
                             
                             <button 
@@ -290,32 +322,26 @@
 
                         {view === 'about' && (
                             <div className="animate-in space-y-20 mb-20">
-                                {/* Page Header */}
                                 <div className="text-center space-y-6 pt-12">
                                     <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D4A373]">Our Story</h2>
                                     <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-[#4A3728]">Baked in <br/><span className="italic text-[#D4A373]">Stockholm</span></h1>
                                 </div>
 
-                                {/* Founder Section */}
                                 <section className="grid md:grid-cols-2 gap-16 items-center bg-white rounded-[3rem] p-8 md:p-16 border border-[#F2E8DF]">
                                     <div className="relative">
                                         <div className="absolute -top-6 -left-6 w-24 h-24 bg-[#D4A373] rounded-full flex items-center justify-center text-white z-10 -rotate-12 shadow-xl">
                                             <span className="font-black text-xl tracking-tighter">PD</span>
                                         </div>
                                         <div className="aspect-[4/5] rounded-[2rem] overflow-hidden">
-                                            <img 
-                                                src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800" 
-                                                className="w-full h-full object-cover" 
-                                                alt="Founder PD in the kitchen" 
-                                            />
+                                            <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800" className="w-full h-full object-cover" alt="Founder PD in the kitchen" />
                                         </div>
                                     </div>
                                     <div className="space-y-8">
                                         <div className="space-y-4">
                                             <h3 className="text-3xl font-extrabold text-[#4A3728]">Meet the Founder: PD</h3>
                                             <p className="text-[#A09184] leading-relaxed text-lg">
-                                                OMYCOOKIE.SE was created with one intention: to give people a moment they would remember.
-                                                From the very beginning, the focus wasn’t on where we started—but on what we wanted others to feel. A cookie that surprises. Comfort that lingers. A pause in the day that feels genuinely special.
+                                                OH MY COOKIE was created with one intention: to give people a moment they would remember.
+                                                From the very beginning, the focus wasn’t on where we started—but on what we wanted others to feel. A cookie that surprises. Comfort that lingers.
                                             </p>
                                             <p className="text-[#A09184] leading-relaxed text-lg">
                                                 “To me, fika is about presence,” says founder PD. “It’s about slowing down and enjoying something made with thought. That’s the experience we wanted to share.”
@@ -332,7 +358,6 @@
                                     </div>
                                 </section>
 
-                                {/* Community Section */}
                                 <section className="space-y-12">
                                     <div className="text-center">
                                         <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D4A373] mb-4">The Community</h2>
@@ -352,7 +377,6 @@
                                     </div>
                                 </section>
 
-                                {/* Social Section */}
                                 <section className="bg-[#4A3728] rounded-[3rem] p-12 md:p-20 text-center space-y-8 text-white relative overflow-hidden">
                                     <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
                                         <div className="grid grid-cols-6 gap-4 p-4">
@@ -427,7 +451,6 @@
                                                     <div className="flex justify-between items-end pt-4">
                                                         <div className="space-y-1">
                                                             <span className="text-3xl font-black text-[#4A3728]">{box.price} <span className="text-sm">SEK</span></span>
-                                                            <p className="text-[10px] text-[#A09184] font-bold uppercase tracking-widest">~{(box.price / box.size).toFixed(1)} per cookie</p>
                                                         </div>
                                                         <span className="bg-[#4A3728] text-white p-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all"><Icon name="ArrowRight" size={20} /></span>
                                                     </div>
@@ -443,12 +466,7 @@
                                                     <h2 className="text-4xl font-extrabold text-[#4A3728]">Building {BOX_OPTIONS.find(b => b.size === selectedBoxSize).title}</h2>
                                                     <p className="text-[#A09184]">Select {selectedBoxSize} cookies to complete your pack.</p>
                                                 </div>
-                                                <button 
-                                                    onClick={() => setSelectedBoxSize(null)}
-                                                    className="text-[10px] font-black uppercase tracking-widest text-[#D4A373] hover:text-[#4A3728] underline underline-offset-4"
-                                                >
-                                                    Change Size
-                                                </button>
+                                                <button onClick={() => setSelectedBoxSize(null)} className="text-[10px] font-black uppercase tracking-widest text-[#D4A373] hover:text-[#4A3728] underline underline-offset-4">Change Size</button>
                                             </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -511,42 +529,34 @@
                         )}
 
                         {view === 'privacy' && (
-                            <div className="animate-in max-w-4xl mx-auto py-12 px-4 space-y-12">
+                            <div className="animate-in max-w-4xl mx-auto py-12 px-4 space-y-12 text-[#4A3728]">
                                 <button onClick={() => setView('home')} className="flex items-center gap-2 font-bold text-xs uppercase tracking-widest text-[#A09184] hover:text-[#4A3728] transition-colors mb-10">
                                     <Icon name="ArrowLeft" size={14} /> Back to Home
                                 </button>
-                                
                                 <div className="space-y-4">
                                     <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D4A373]">Legal Information</h2>
-                                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[#4A3728]">Privacy Policy</h1>
-                                    <p className="text-sm text-[#A09184]">Effective Date: February 20, 2026</p>
+                                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">Privacy Policy</h1>
+                                    <p className="text-sm font-bold opacity-60">Effective Date: February 20, 2026</p>
                                 </div>
-
-                                <div className="prose prose-stone text-[#4A3728] space-y-10">
+                                <div className="prose prose-stone space-y-12 text-[#4A3728]">
                                     <section className="space-y-4">
-                                        <h3 className="text-xl font-bold">1. Introduction</h3>
-                                        <p className="leading-relaxed opacity-80">
-                                            Welcome to O My Cookie! (referred to as "we", "us", or "our"). We are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This policy outlines how we collect, use, and protect your data when you visit omycookie.se.
-                                        </p>
+                                        <h3 className="text-2xl font-extrabold">1. Introduction</h3>
+                                        <p className="leading-relaxed opacity-80">Welcome to Oh! My Cookie(referred to as "we", "us", or "our"). We are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This policy outlines how we collect, use, and protect your data when you visit <span className="font-bold">ohmycookie.se</span>.</p>
                                     </section>
 
                                     <section className="space-y-4">
-                                        <h3 className="text-xl font-bold">2. Information We Collect</h3>
-                                        <p className="leading-relaxed opacity-80">
-                                            When you place a pickup order or use our "Build a Box" feature, we may collect:
-                                        </p>
+                                        <h3 className="text-2xl font-extrabold">2. Information We Collect</h3>
+                                        <p className="leading-relaxed opacity-80">When you place a pickup order or use our "Build a Box" feature, we may collect:</p>
                                         <ul className="list-disc pl-5 space-y-2 opacity-80">
-                                            <li><strong>Contact Details:</strong> Your name and phone number to verify your order during in-store pickup.</li>
-                                            <li><strong>Order History:</strong> Details of the cookie selections and boxes you have curated.</li>
-                                            <li><strong>Usage Data:</strong> Information on how you interact with our website to improve your user experience.</li>
+                                            <li><span className="font-bold">Contact Details:</span> Your name and phone number to verify your order during in-store pickup.</li>
+                                            <li><span className="font-bold">Order History:</span> Details of the cookie selections and boxes you have curated.</li>
+                                            <li><span className="font-bold">Usage Data:</span> Information on how you interact with our website to improve your user experience.</li>
                                         </ul>
                                     </section>
 
                                     <section className="space-y-4">
-                                        <h3 className="text-xl font-bold">3. How We Use Your Information</h3>
-                                        <p className="leading-relaxed opacity-80">
-                                            Your data is used strictly for operational purposes:
-                                        </p>
+                                        <h3 className="text-2xl font-extrabold">3. How We Use Your Information</h3>
+                                        <p className="leading-relaxed opacity-80">Your data is used strictly for operational purposes:</p>
                                         <ul className="list-disc pl-5 space-y-2 opacity-80">
                                             <li>To process and fulfill your cookie orders for pickup in Stockholm.</li>
                                             <li>To provide customer support regarding your order.</li>
@@ -555,34 +565,28 @@
                                     </section>
 
                                     <section className="space-y-4">
-                                        <h3 className="text-xl font-bold">4. Data Storage & GDPR</h3>
-                                        <p className="leading-relaxed opacity-80">
-                                            As a Swedish company (Bluden AB), we comply with the General Data Protection Regulation (GDPR). Your data is stored securely and is only accessible to authorized staff members necessary for order fulfillment. We do not sell your personal data to third parties.
-                                        </p>
+                                        <h3 className="text-2xl font-extrabold">4. Data Storage & GDPR</h3>
+                                        <p className="leading-relaxed opacity-80">As a Swedish company (Bluden AB), we comply with the General Data Protection Regulation (GDPR). Your data is stored securely and is only accessible to authorized staff members necessary for order fulfillment. We do not sell your personal data to third parties.</p>
                                     </section>
 
                                     <section className="space-y-4">
-                                        <h3 className="text-xl font-bold">5. Cookies</h3>
-                                        <p className="leading-relaxed opacity-80">
-                                            Our website uses "cookies" to enhance your experience. These are small files stored on your device that help us remember your shopping basket and preferences. You can choose to disable cookies in your browser settings, though this may limit your ability to use the "Build a Box" feature.
-                                        </p>
+                                        <h3 className="text-2xl font-extrabold">5. Cookies</h3>
+                                        <p className="leading-relaxed opacity-80">Our website uses "cookies" to enhance your experience. These are small files stored on your device that help us remember your shopping basket and preferences. You can choose to disable cookies in your browser settings, though this may limit your ability to use the "Build a Box" feature.</p>
                                     </section>
 
                                     <section className="space-y-4">
-                                        <h3 className="text-xl font-bold">6. Company Information</h3>
-                                        <p className="leading-relaxed opacity-80">
-                                            O My Cookie! is operated by:<br/>
-                                            <strong>Bluden AB</strong><br/>
-                                            Stockholm, Sweden<br/>
-                                            Contact: info@omycookie.se
-                                        </p>
+                                        <h3 className="text-2xl font-extrabold">6. Company Information</h3>
+                                        <p className="leading-relaxed opacity-80">Oh! My Cookie is operated by:</p>
+                                        <address className="not-italic opacity-80">
+                                            Bluden AB<br />
+                                            Stockholm, Sweden<br />
+                                            Contact: <a href="mailto:info@ohmycookie.se" className="text-[#D4A373] font-bold">info@ohmycookie.se</a>
+                                        </address>
                                     </section>
 
-                                    <section className="space-y-4">
-                                        <h3 className="text-xl font-bold">7. Your Rights</h3>
-                                        <p className="leading-relaxed opacity-80">
-                                            You have the right to request access to the personal data we hold about you, to request corrections, or to ask for your data to be deleted from our pickup logs. Please contact us via email for any such requests.
-                                        </p>
+                                    <section className="space-y-4 pb-20">
+                                        <h3 className="text-2xl font-extrabold">7. Your Rights</h3>
+                                        <p className="leading-relaxed opacity-80">You have the right to request access to the personal data we hold about you, to request corrections, or to ask for your data to be deleted from our pickup logs. Please contact us via email for any such requests.</p>
                                     </section>
                                 </div>
                             </div>
@@ -593,11 +597,11 @@
                     <footer className="pt-20 pb-16 text-center space-y-10 border-t border-[#F2E8DF]">
                         <div className="flex justify-center gap-2 items-center grayscale opacity-40">
                             <div className="bg-[#4A3728] p-1.5 rounded-lg"><Icon name="Cookie" size={14} className="text-white" /></div>
-                            <span className="font-extrabold text-lg tracking-tighter uppercase text-[#4A3728]">omycookie.se</span>
+                            <span className="font-extrabold text-lg tracking-tighter uppercase text-[#4A3728]">ohmycookie.se</span>
                         </div>
 
                         <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 px-6">
-                            <button onClick={() => {setView('about'); window.scrollTo(0,0)}} className="text-[10px] font-black text-[#A09184] uppercase tracking-[0.2em] hover:text-[#D4A373] transition-colors">About CC</button>
+                            <button onClick={() => {setView('about'); window.scrollTo(0,0)}} className="text-[10px] font-black text-[#A09184] uppercase tracking-[0.2em] hover:text-[#D4A373] transition-colors">About OMC</button>
                             <a href="#" className="text-[10px] font-black text-[#A09184] uppercase tracking-[0.2em] hover:text-[#D4A373] transition-colors">Terms of Service</a>
                             <button onClick={() => {setView('privacy'); window.scrollTo(0,0)}} className="text-[10px] font-black text-[#A09184] uppercase tracking-[0.2em] hover:text-[#D4A373] transition-colors">Privacy Policy</button>
                         </div>
@@ -621,56 +625,32 @@
                                 <div className="flex-1 overflow-y-auto no-scrollbar space-y-4">
                                     {cartStep === 'review' ? (
                                         cart.length === 0 ? (
-                                            <div className="text-center py-20 opacity-20">
-                                                <CartIcon size={48} className="mx-auto mb-4 text-[#4A3728]"/>
-                                                <p className="font-bold text-[#4A3728]">Empty basket</p>
-                                            </div>
+                                            <div className="text-center py-20 opacity-20"><p className="font-bold text-[#4A3728]">Empty basket</p></div>
                                         ) : (
                                             cart.map(item => (
                                                 <div key={item.id} className="bg-[#FDFBF7] p-6 rounded-[1.5rem] border border-[#F2E8DF] flex justify-between items-center group animate-in">
                                                     <div className="flex-1">
                                                         <h4 className="font-bold text-lg text-[#4A3728] leading-tight">{item.type}</h4>
-                                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#D4A373] mt-1">
-                                                            {item.price} SEK / ea
-                                                        </p>
+                                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#D4A373] mt-1">{item.price} SEK / ea</p>
                                                     </div>
-                                                    
                                                     <div className="flex items-center bg-white border border-[#F2E8DF] rounded-xl p-1 shadow-sm">
-                                                        <button 
-                                                            onClick={() => updateQuantity(item.id, -1)}
-                                                            className="w-8 h-8 flex items-center justify-center text-[#4A3728] hover:bg-gray-50 rounded-lg transition-colors"
-                                                        >
-                                                            <Icon name="Minus" size={14} />
-                                                        </button>
+                                                        <button onClick={() => updateQuantity(item.id, -1)} className="w-8 h-8 flex items-center justify-center text-[#4A3728] hover:bg-gray-50 rounded-lg transition-colors"><Icon name="Minus" size={14} /></button>
                                                         <span className="w-8 text-center font-black text-sm text-[#4A3728]">{item.quantity}</span>
-                                                        <button 
-                                                            onClick={() => updateQuantity(item.id, 1)}
-                                                            className="w-8 h-8 flex items-center justify-center text-[#4A3728] hover:bg-gray-50 rounded-lg transition-colors"
-                                                        >
-                                                            <Icon name="Plus" size={14} />
-                                                        </button>
+                                                        <button onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 flex items-center justify-center text-[#4A3728] hover:bg-gray-50 rounded-lg transition-colors"><Icon name="Plus" size={14} /></button>
                                                     </div>
-
-                                                    <div className="pl-6 text-right min-w-[80px]">
-                                                        <p className="font-black text-[#4A3728] whitespace-nowrap">{item.price * item.quantity} SEK</p>
-                                                    </div>
+                                                    <div className="pl-6 text-right min-w-[80px]"><p className="font-black text-[#4A3728] whitespace-nowrap">{item.price * item.quantity} SEK</p></div>
                                                 </div>
                                             ))
                                         )
                                     ) : cartStep === 'shipping' ? (
                                         <div className="space-y-4 pt-4">
-                                            <input className="w-full p-5 bg-[#FDFBF7] border border-[#F2E8DF] rounded-2xl outline-none focus:border-[#D4A373] text-[#4A3728]" placeholder="Contact Name" />
-                                            <input className="w-full p-5 bg-[#FDFBF7] border border-[#F2E8DF] rounded-2xl outline-none focus:border-[#D4A373] text-[#4A3728]" placeholder="Phone Number" />
-                                            <div className="bg-[#F5EBE0] p-5 rounded-2xl flex items-center gap-4">
-                                                <Icon name="Store" size={20} className="text-[#D4A373]" />
-                                                <p className="text-xs font-bold leading-tight uppercase tracking-widest text-[#4A3728]">In-Store Pickup Only <br/><span className="text-[10px] opacity-60">Flagship Shop, Stockholm</span></p>
-                                            </div>
+                                            <input className="w-full p-5 bg-[#FDFBF7] border border-[#F2E8DF] rounded-2xl outline-none focus:border-[#D4A373]" placeholder="Contact Name" />
+                                            <input className="w-full p-5 bg-[#FDFBF7] border border-[#F2E8DF] rounded-2xl outline-none focus:border-[#D4A373]" placeholder="Phone Number" />
                                         </div>
                                     ) : (
                                         <div className="text-center py-10 space-y-6">
                                             <div className="w-24 h-24 bg-[#D4A373]/10 text-[#D4A373] rounded-full flex items-center justify-center mx-auto"><Icon name="Check" size={48} /></div>
                                             <h3 className="text-3xl font-extrabold text-[#4A3728]">Vi ses snart!</h3>
-                                            <p className="text-sm opacity-60 text-[#4A3728]">We've received your order. It'll be ready for pick-up soon.</p>
                                             <button onClick={() => {setIsCartOpen(false); setView('home'); setCart([]); setCartStep('review');}} className="w-full py-5 bg-[#4A3728] text-white rounded-2xl font-black text-xs uppercase tracking-widest">Great</button>
                                         </div>
                                     )}
@@ -695,30 +675,15 @@
                         <div className="fixed bottom-6 left-6 right-6 z-[60] md:left-auto md:right-10 md:w-96 animate-in">
                             <div className="bg-white/95 backdrop-blur-xl border border-[#F2E8DF] shadow-2xl rounded-[2rem] p-6 flex flex-col gap-6">
                                 <div className="flex gap-4 items-start">
-                                    <div className="bg-[#F5EBE0] p-3 rounded-2xl">
-                                        <Icon name="Cookie" size={24} className="text-[#D4A373]" />
-                                    </div>
+                                    <div className="bg-[#F5EBE0] p-3 rounded-2xl"><Icon name="Cookie" size={24} className="text-[#D4A373]" /></div>
                                     <div className="space-y-1">
                                         <h3 className="font-extrabold text-[#4A3728]">Cookie Notice</h3>
-                                        <p className="text-xs text-[#A09184] line-height-relaxed">
-                                            We use cookies to remember your fika box selections and improve your experience. 
-                                            Check our <button onClick={() => {setView('privacy'); setShowCookieBanner(false); window.scrollTo(0,0)}} className="text-[#D4A373] underline font-bold">Privacy Policy</button> for more details.
-                                        </p>
+                                        <p className="text-xs text-[#A09184] line-height-relaxed">We use cookies to remember your fika box selections and improve your experience. Check our Privacy Policy for more details. <button onClick={() => {setView('privacy'); setShowCookieBanner(false); window.scrollTo(0,0)}} className="text-[#D4A373] underline font-bold">Privacy Policy</button>.</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-3">
-                                    <button 
-                                        onClick={acceptCookies}
-                                        className="flex-1 py-4 bg-[#4A3728] text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#2d2118] transition-colors"
-                                    >
-                                        Accept All
-                                    </button>
-                                    <button 
-                                        onClick={() => setShowCookieBanner(false)}
-                                        className="px-6 py-4 bg-[#F5EBE0] text-[#4A3728] rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#EDE0D4] transition-colors"
-                                    >
-                                        Dismiss
-                                    </button>
+                                    <button onClick={acceptCookies} className="flex-1 py-4 bg-[#4A3728] text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#2d2118]">Accept All</button>
+                                    <button onClick={() => setShowCookieBanner(false)} className="px-6 py-4 bg-[#F5EBE0] text-[#4A3728] rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#EDE0D4]">Dismiss</button>
                                 </div>
                             </div>
                         </div>
